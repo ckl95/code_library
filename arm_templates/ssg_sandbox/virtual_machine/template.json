@@ -1,0 +1,213 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "String"
+    },
+    "networkInterfaceName": {
+      "type": "String"
+    },
+    "networkSecurityGroupName": {
+      "type": "String"
+    },
+    "subnetId": {
+      "type": "String"
+    },
+    "virtualMachineName": {
+      "type": "String"
+    },
+    "virtualMachineComputerName": {
+      "type": "String"
+    },
+    "virtualMachineRG": {
+      "type": "String"
+    },
+    "osDiskType": {
+      "type": "String"
+    },
+    "osDiskDeleteOption": {
+      "type": "String"
+    },
+    "virtualMachineSize": {
+      "type": "String"
+    },
+    "nicDeleteOption": {
+      "type": "String"
+    },
+    "hibernationEnabled": {
+      "type": "Bool"
+    },
+    "adminUsername": {
+      "type": "String"
+    },
+    "adminPassword": {
+      "type": "SecureString"
+    },
+    "patchMode": {
+      "type": "String"
+    },
+    "enablePeriodicAssessment": {
+      "type": "String"
+    },
+    "enableHotpatching": {
+      "type": "Bool"
+    },
+    "autoShutdownStatus": {
+      "type": "String"
+    },
+    "autoShutdownTime": {
+      "type": "String"
+    },
+    "autoShutdownTimeZone": {
+      "type": "String"
+    },
+    "autoShutdownNotificationStatus": {
+      "type": "String"
+    },
+    "autoShutdownNotificationLocale": {
+      "type": "String"
+    },
+    "autoShutdownNotificationEmail": {
+      "type": "String"
+    },
+    "publicIpName": {
+      "type": "String"
+    }
+  },
+  "variables": {
+    "nicId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]",
+    "nsgId": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroupName'))]",
+    "pipId": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]",
+    "subnetRef": "[parameters('subnetId')]",
+    "vmId": "[resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', parameters('virtualMachineName'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2022-11-01",
+      "name": "[parameters('networkInterfaceName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[variables('pipId')]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[variables('pipId')]"
+              }
+            }
+          }
+        ],
+        "networkSecurityGroup": {
+          "id": "[variables('nsgId')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2024-03-01",
+      "name": "[parameters('virtualMachineName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[variables('nicId')]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('virtualMachineSize')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "[parameters('osDiskType')]"
+            },
+            "deleteOption": "[parameters('osDiskDeleteOption')]"
+          },
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2025-datacenter-g2",
+            "version": "latest"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[variables('nicId')]",
+              "properties": {
+                "deleteOption": "[parameters('nicDeleteOption')]"
+              }
+            }
+          ]
+        },
+        "securityProfile": {},
+        "additionalCapabilities": {
+          "hibernationEnabled": false
+        },
+        "osProfile": {
+          "computerName": "[parameters('virtualMachineComputerName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "windowsConfiguration": {
+            "enableAutomaticUpdates": false,
+            "provisionVmAgent": true,
+            "patchSettings": {
+              "patchMode": "[parameters('patchMode')]",
+              "assessmentMode": "[parameters('enablePeriodicAssessment')]",
+              "enableHotpatching": "[parameters('enableHotpatching')]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.DevTestLab/schedules",
+      "apiVersion": "2018-09-15",
+      "name": "[concat('shutdown-computevm-', parameters('virtualMachineName'))]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[variables('vmId')]"
+      ],
+      "properties": {
+        "status": "[parameters('autoShutdownStatus')]",
+        "taskType": "ComputeVmShutdownTask",
+        "dailyRecurrence": {
+          "time": "[parameters('autoShutdownTime')]"
+        },
+        "timeZoneId": "[parameters('autoShutdownTimeZone')]",
+        "targetResourceId": "[variables('vmId')]",
+        "notificationSettings": {
+          "status": "[parameters('autoShutdownNotificationStatus')]",
+          "notificationLocale": "[parameters('autoShutdownNotificationLocale')]",
+          "timeInMinutes": "30",
+          "emailRecipient": "[parameters('autoShutdownNotificationEmail')]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2023-06-01",
+      "name": "[parameters('publicIpName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "idleTimeoutInMinutes": 4,
+        "publicIpAddressVersion": "IPv4"
+      }
+    }
+  ],
+  "outputs": {
+    "adminUsername": {
+      "type": "String",
+      "value": "[parameters('adminUsername')]"
+    }
+  }
+}
