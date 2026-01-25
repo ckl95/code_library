@@ -1,0 +1,78 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "value": "northeurope"
+    },
+    "networkInterfaceName": {
+      "value": "swaztestcakl04533"
+    },
+    "networkSecurityGroupName": {
+      "value": "nsg-free-sql-mi-5750939"
+    },
+    "subnetId": {
+      "value": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/Built-In-Identity-RG/providers/Microsoft.Network/virtualNetworks/vnet-free-sql-mi-5750939/subnets/ManagedInstance"
+    },
+    "virtualMachineName": {
+      "value": "swaztestcakl04"
+    },
+    "virtualMachineComputerName": {
+      "value": "swaztestcakl04"
+    },
+    "virtualMachineRG": {
+      "value": "Built-In-Identity-RG"
+    },
+    "osDiskType": {
+      "value": "Standard_LRS"
+    },
+    "osDiskDeleteOption": {
+      "value": "Delete"
+    },
+    "virtualMachineSize": {
+      "value": "Standard_B2ms"
+    },
+    "nicDeleteOption": {
+      "value": "Detach"
+    },
+    "hibernationEnabled": {
+      "value": false
+    },
+    "adminUsername": {
+      "value": "ladmin"
+    },
+    "adminPassword": {
+      "value": "Vfrtgb!@34"
+    },
+    "patchMode": {
+      "value": "Manual"
+    },
+    "enablePeriodicAssessment": {
+      "value": "ImageDefault"
+    },
+    "enableHotpatching": {
+      "value": false
+    },
+    "autoShutdownStatus": {
+      "value": "Enabled"
+    },
+    "autoShutdownTime": {
+      "value": "19:00"
+    },
+    "autoShutdownTimeZone": {
+      "value": "UTC"
+    },
+    "autoShutdownNotificationStatus": {
+      "value": "Enabled"
+    },
+    "autoShutdownNotificationLocale": {
+      "value": "en"
+    },
+    "autoShutdownNotificationEmail": {
+      "value": "casper.klaver@soprasteria.com"
+    },
+    "publicIpName": {
+      "value": "pip-vnet-free-sql-mi-5750939-managedinstance-4"
+    }
+  }
+}
