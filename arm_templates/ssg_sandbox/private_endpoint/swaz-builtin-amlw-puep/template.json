@@ -1,0 +1,86 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "privateEndpoints_swaz_builtin_amlw_puep_name": {
+            "defaultValue": "swaz-builtin-amlw-puep",
+            "type": "String"
+        },
+        "workspaces_machinelearningtestcasperklaver_externalid": {
+            "defaultValue": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/Built-In-Identity-RG/providers/Microsoft.MachineLearningServices/workspaces/machinelearningtestcasperklaver",
+            "type": "String"
+        },
+        "virtualNetworks_test_sqlserver_vnet_externalid": {
+            "defaultValue": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/test-logic-ckl193474_group/providers/Microsoft.Network/virtualNetworks/test-sqlserver-vnet",
+            "type": "String"
+        },
+        "privateDnsZones_privatelink_api_azureml_ms_externalid": {
+            "defaultValue": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/test-logic-ckl193474_group/providers/Microsoft.Network/privateDnsZones/privatelink.api.azureml.ms",
+            "type": "String"
+        },
+        "privateDnsZones_privatelink_notebooks_azure_net_externalid": {
+            "defaultValue": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/test-logic-ckl193474_group/providers/Microsoft.Network/privateDnsZones/privatelink.notebooks.azure.net",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2025-05-01",
+            "name": "[parameters('privateEndpoints_swaz_builtin_amlw_puep_name')]",
+            "location": "westeurope",
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpoints_swaz_builtin_amlw_puep_name')]",
+                        "id": "[concat(resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_swaz_builtin_amlw_puep_name')), concat('/privateLinkServiceConnections/', parameters('privateEndpoints_swaz_builtin_amlw_puep_name')))]",
+                        "properties": {
+                            "privateLinkServiceId": "[parameters('workspaces_machinelearningtestcasperklaver_externalid')]",
+                            "groupIds": [
+                                "amlworkspace"
+                            ],
+                            "privateLinkServiceConnectionState": {
+                                "status": "Approved",
+                                "description": "Auto-Approved",
+                                "actionsRequired": "None"
+                            }
+                        }
+                    }
+                ],
+                "manualPrivateLinkServiceConnections": [],
+                "customNetworkInterfaceName": "[concat(parameters('privateEndpoints_swaz_builtin_amlw_puep_name'), '-nic')]",
+                "subnet": {
+                    "id": "[concat(parameters('virtualNetworks_test_sqlserver_vnet_externalid'), '/subnets/default')]"
+                },
+                "ipConfigurations": [],
+                "customDnsConfigs": [],
+                "ipVersionType": "IPv4"
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+            "apiVersion": "2025-05-01",
+            "name": "[concat(parameters('privateEndpoints_swaz_builtin_amlw_puep_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_swaz_builtin_amlw_puep_name'))]"
+            ],
+            "properties": {
+                "privateDnsZoneConfigs": [
+                    {
+                        "name": "privatelink-api-azureml-ms",
+                        "properties": {
+                            "privateDnsZoneId": "[parameters('privateDnsZones_privatelink_api_azureml_ms_externalid')]"
+                        }
+                    },
+                    {
+                        "name": "privatelink-notebooks-azure-net",
+                        "properties": {
+                            "privateDnsZoneId": "[parameters('privateDnsZones_privatelink_notebooks_azure_net_externalid')]"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
