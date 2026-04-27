@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "privateEndpoints_sa2_testvn_default_name": {
+            "defaultValue": "sa2-testvn-default",
+            "type": "String"
+        },
+        "storageAccounts_sa02testcasperklaver_externalid": {
+            "defaultValue": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/Built-In-Identity-RG/providers/Microsoft.Storage/storageAccounts/sa02testcasperklaver",
+            "type": "String"
+        },
+        "virtualNetworks_test_sqlserver_vnet_externalid": {
+            "defaultValue": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/test-logic-ckl193474_group/providers/Microsoft.Network/virtualNetworks/test-sqlserver-vnet",
+            "type": "String"
+        },
+        "privateDnsZones_privatelink_blob_core_windows_net_externalid": {
+            "defaultValue": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/test-logic-ckl193474_group/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/privateEndpoints",
+            "apiVersion": "2025-05-01",
+            "name": "[parameters('privateEndpoints_sa2_testvn_default_name')]",
+            "location": "westeurope",
+            "properties": {
+                "privateLinkServiceConnections": [
+                    {
+                        "name": "[parameters('privateEndpoints_sa2_testvn_default_name')]",
+                        "id": "[concat(resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_sa2_testvn_default_name')), concat('/privateLinkServiceConnections/', parameters('privateEndpoints_sa2_testvn_default_name')))]",
+                        "properties": {
+                            "privateLinkServiceId": "[parameters('storageAccounts_sa02testcasperklaver_externalid')]",
+                            "groupIds": [
+                                "blob"
+                            ],
+                            "privateLinkServiceConnectionState": {
+                                "status": "Approved",
+                                "description": "Auto-Approved",
+                                "actionsRequired": "None"
+                            }
+                        }
+                    }
+                ],
+                "manualPrivateLinkServiceConnections": [],
+                "customNetworkInterfaceName": "[concat(parameters('privateEndpoints_sa2_testvn_default_name'), '-nic')]",
+                "subnet": {
+                    "id": "[concat(parameters('virtualNetworks_test_sqlserver_vnet_externalid'), '/subnets/default')]"
+                },
+                "ipConfigurations": [],
+                "customDnsConfigs": [],
+                "ipVersionType": "IPv4"
+            }
+        },
+        {
+            "type": "Microsoft.Network/privateEndpoints/privateDnsZoneGroups",
+            "apiVersion": "2025-05-01",
+            "name": "[concat(parameters('privateEndpoints_sa2_testvn_default_name'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/privateEndpoints', parameters('privateEndpoints_sa2_testvn_default_name'))]"
+            ],
+            "properties": {
+                "privateDnsZoneConfigs": [
+                    {
+                        "name": "privatelink-blob-core-windows-net",
+                        "properties": {
+                            "privateDnsZoneId": "[parameters('privateDnsZones_privatelink_blob_core_windows_net_externalid')]"
+                        }
+                    }
+                ]
+            }
+        }
+    ]
+}
