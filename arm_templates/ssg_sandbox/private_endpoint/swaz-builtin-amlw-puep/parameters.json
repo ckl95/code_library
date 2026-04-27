@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "privateEndpoints_swaz_builtin_amlw_puep_name": {
+      "value": "swaz-builtin-amlw-puep"
+    },
+    "workspaces_machinelearningtestcasperaklaver_externalid": {
+      "value": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/Built-In-Identity-RG/providers/Microsoft.MachineLearningServices/workspaces/machinelearningtestcasperklaver"
+    },
+    "virtualNetworks_test_sqlserver_vnet_externalid": {
+      "value": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/test-logic-ckl193474_group/providers/Microsoft.Network/virtualNetworks/test-sqlserver-vnet"
+    },
+    "privateDnsZones_privatelink_api_azureml_ms_externalid": {
+      "value": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/test-logic-ckl193474_group/providers/Microsoft.Network/privateDnsZones/privatelink.api.azureml.ms"
+    },
+    "privateDnsZones_privatelink_notebooks_azure_net_externalid": {
+      "value": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/test-logic-ckl193474_group/providers/Microsoft.Network/privateDnsZones/privatelink.notebooks.azure.net"
+    }
+  }
+}
