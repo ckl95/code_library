@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "privateEndpoints_sa2_testvn_default_name": {
+      "value": "sa2-testvn-default"
+    },
+    "storageAccounts_sa02testcasperklaver_externalid": {
+      "value": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/Built-In-Identity-RG/providers/Microsoft.Storage/storageAccounts/sa02testcasperklaver"
+    },
+    "virtualNetworks_test_sqlserver_vnet_externalid": {
+      "value": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/test-logic-ckl193474_group/providers/Microsoft.Network/virtualNetworks/test-sqlserver-vnet"
+    },
+    "privateDnsZones_privatelink_blob_core_windows_net_externalid": {
+      "value": "/subscriptions/534860c8-c3ed-4e4f-89b2-b29e8c4bc51f/resourceGroups/test-logic-ckl193474_group/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
+    }
+  }
+}
